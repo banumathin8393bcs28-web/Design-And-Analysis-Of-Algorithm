@@ -1,0 +1,60 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+int n, capacity, maxProfit = 0;
+int weights[100], values[100];
+int currentPath[100], optimalPath[100];
+double calculateBound(int index, int currentWeight, int currentValue) {
+    double upperBound = currentValue;
+    int remainingWeight = capacity - currentWeight;
+    for (int i = index; i < n; i++) {
+        if (weights[i] <= remainingWeight) {
+            remainingWeight -= weights[i];
+            upperBound += values[i];
+        } else {
+            upperBound += values[i] * ((double)remainingWeight / weights[i]);
+            break;
+        }
+    }
+    return upperBound;
+}
+void solve(int index, int currentWeight, int currentValue) {
+    if (currentValue > maxProfit) {
+        maxProfit = currentValue;
+        for (int i = 0; i < n; i++) {
+            optimalPath[i] = currentPath[i];
+        }
+    }
+    if (index == n)
+       return;
+    if (currentWeight + weights[index] <= capacity) {
+        currentPath[index] = 1;
+        solve(index + 1, currentWeight + weights[index], currentValue + values[index]);
+        currentPath[index] = 0;
+    }
+    if (calculateBound(index + 1, currentWeight, currentValue) > maxProfit) {
+        currentPath[index] = 0;
+        solve(index + 1, currentWeight, currentValue);
+    }
+}
+int main() {
+    cout << "Enter the number of items: ";
+    cin >> n;
+    cout << "Enter total knapsack capacity: ";
+    cin >> capacity;
+    for (int i = 0; i < n; i++) {
+        cout << "Item " << i + 1 << " (Weight and Value): ";
+        cin >> weights[i] >> values[i];
+        currentPath[i] = 0;
+    }
+    solve(0, 0, 0);
+    cout << "\nMaximum Profit : " << maxProfit << endl;
+    cout << "Items Included : ";
+    for (int i = 0; i < n; i++) {
+        if (optimalPath[i] == 1) {
+            cout << "Item " << i + 1 << " ";
+        }
+    }
+    cout << endl;
+    return 0;
+}
