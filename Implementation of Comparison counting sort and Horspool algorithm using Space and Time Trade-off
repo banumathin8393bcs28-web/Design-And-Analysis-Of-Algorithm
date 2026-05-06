@@ -1,0 +1,129 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+void printCount(int Count[], int n) {
+    for (int i = 0; i < n; i++) {
+        cout << setw(3) << Count[i] << " ";
+    }
+    cout << endl;
+}
+void comparisonCountingSort(int A[], int n) {
+    int Count[n] = {0};
+    int S[n];
+    cout << "\n Initial Array A[0.." << n-1 << "]: ";
+    for (int i = 0; i < n; i++) cout << A[i] << " ";
+    cout << "\n\nInitial Count[]: ";
+    printCount(Count, n);
+    for (int i = 0; i <= n - 2; i++) {
+        for (int j = i + 1; j <= n - 1; j++) {
+            if (A[i] < A[j])
+                Count[j]++;
+            else
+                Count[i]++;
+        }
+        cout << "After pass i = " << i << " Count[]: ";
+        printCount(Count, n);
+    }
+    cout << "\nFinal Count[]: ";
+    printCount(Count, n);
+    for (int i = 0; i < n; i++) {
+        S[Count[i]] = A[i];
+    }
+    cout << "\nArray S[0.." << n-1 << "]: ";
+    for (int i = 0; i < n; i++) cout << S[i] << " ";
+}
+int main() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    int A[n];
+    cout << "Enter elements:\n";
+    for (int i = 0; i < n; i++) cin >> A[i];
+    comparisonCountingSort(A, n);
+    return 0;
+}
+-------------------------------------------------------------------
+#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+#define SIZE 27
+int getIndex(char c) {
+    if (c == '_')
+        return 26;
+    return c - 'A';
+}
+void shiftTable(string term, int table[]) {
+    int m = term.length();
+    for (int i = 0; i < SIZE; i++)
+        table[i] = m;
+    for (int j = 0; j < m - 1; j++)
+        table[getIndex(term[j])] = m - 1 - j;
+    cout << "\nSHIFT TABLE:\n";
+    for (char c = 'A'; c <= 'Z'; c++)
+        cout << setw(3) << c;
+    cout << setw(3) << "_\n";
+    for (int i = 0; i < SIZE; i++)
+        cout << setw(3) << table[i];
+    cout << endl;
+}
+void horspool(string text, string term) {
+    int table[SIZE];
+    shiftTable(term, table);
+    int n = text.length();
+    int m = term.length();
+    int i = 0;
+    int comparisons = 0;
+    int alignments = 0;
+    cout << "\nTEXT:   ";
+    for (char c : text)
+        cout << c << " ";
+    cout << endl;
+    cout << "TERM:\n";
+    while (i <= n - m) {
+        alignments++;
+        cout << "        ";
+        for (int s = 0; s < i; s++)
+            cout << "  ";
+        for (char c : term)
+            cout << c << " ";
+        cout << endl;
+        int k = 0;
+        bool mismatch = false;
+        cout << "        ";
+        for (int s = 0; s < i; s++)
+            cout << "  ";
+        while (k < m) {
+            comparisons++;
+            if (term[m - 1 - k] == text[i + m - 1 - k]) {
+                cout << "| ";
+            } else {
+                cout << "X ";
+                mismatch = true;
+                break;
+            }
+            k++;
+        }
+        cout << endl;
+        if (!mismatch && k == m) {
+            cout << "\nSUCCESSFUL SEARCH\n";
+            cout << "Position: " << i << endl;
+            cout << "Total Comparisons: " << comparisons << endl;
+            cout << "Total Alignments: " << alignments << endl;
+            return;
+        }
+        i = i + table[getIndex(text[i + m - 1])];
+    }
+    cout << "\nUNSUCCESSFUL SEARCH\n";
+    cout << "Total Comparisons: " << comparisons << endl;
+    cout << "Total Alignments: " << alignments << endl;
+}
+int main() {
+    string text, term;
+    cout << "Enter Text (use _ for space) In Capital Letter : ";
+    cin >> text;
+    cout << "Enter Term In Capital Letter : ";
+    cin >> term;
+    horspool(text, term);
+    return 0;
+}
