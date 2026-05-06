@@ -1,0 +1,104 @@
+#include <iostream>
+using namespace std;
+
+class Heap {
+private:
+    int *arr;
+    int capacity;
+    int size;
+
+    void percolateDown(int index) {
+        int child;
+        int tmp = arr[index];
+        for (; index * 2 <= size; index = child) {
+            child = index * 2;
+            if (child != size && arr[child + 1] < arr[child])
+                child++;
+            if (arr[child] < tmp)
+                arr[index] = arr[child];
+            else
+                break;
+        }
+        arr[index] = tmp;
+    }
+
+public:
+    Heap(int cap) {
+        capacity = cap;
+        size = 0;
+        arr = new int[capacity + 1];
+    }
+
+    ~Heap() { delete[] arr; }
+
+    void buildHeap(int count) {
+        size = count;
+        cout << "Enter " << size << " elements:\n";
+        for (int i = 1; i <= size; i++) {
+            cout << "Element " << i << ": ";
+            cin >> arr[i];
+        }
+        for (int i = size / 2; i > 0; i--) {
+            percolateDown(i);
+        }
+        cout << "\nHeap after insertion: ";
+        display();
+    }
+
+    int deletemin() {
+        if (size == 0) return -1;
+        int minVal = arr[1];
+        arr[1] = arr[size--];
+        if (size > 0) percolateDown(1);
+        return minVal;
+    }
+
+    void sort() {
+        cout << "\nSorting steps:\n";
+        while (size > 0) {
+            int minVal = deletemin();
+            cout << minVal << " | ";
+            display();
+        }
+    }
+
+    void display() {
+        if (size == 0) {
+            cout << "[Empty]" << endl;
+            return;
+        }
+        for (int i = 1; i <= size; i++) cout << arr[i] << " ";
+        cout << endl;
+    }
+};
+
+int main() {
+    int n, choice;
+    cout << "Enter the number of elements: ";
+    cin >> n;
+
+    Heap h(n > 0 ? n : 1);
+    if (n > 0) h.buildHeap(n);
+
+    do {
+        cout << "\n1. Display Heap\n2. Sort\n3. Exit\nChoice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                h.display();
+                break;
+            case 2:
+                h.sort();
+
+                break;
+            case 3:
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid choice!\n";
+        }
+    } while (choice != 3);
+
+    return 0;
+}
